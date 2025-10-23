@@ -4,7 +4,7 @@ from langchain_community.document_loaders import (
     UnstructuredPowerPointLoader, UnstructuredExcelLoader
 )
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
@@ -131,50 +131,50 @@ if vector_db:
     retriever_chain = create_retrieval_chain(retriever, document_chain)
 else:
     st.warning("Please upload a file or provide a URL first.")
-# Custom CSS for Aurora Lights theme
+## Custom CSS for a unique "Nebula" theme: Cosmic gradients, glassmorphism effects, and a futuristic vibe
 st.markdown("""
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap">
     <style>
         .stApp {
-            font-family: 'DM Serif Display', serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            color: #ffffff;
+            font-family: 'Manrope', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e6ed;
         }
         .stChatMessage {
             padding: 1.25rem;
             border-radius: 1rem;
             margin-bottom: 1.25rem;
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         .stChatMessage.user {
-            background: rgba(255, 255, 255, 0.1);
-            border-left: 4px solid #a8e6cf;
+            background: rgba(99, 102, 241, 0.15);
+            border-left: 4px solid #6366f1;
         }
         .stChatMessage.assistant {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 4px solid #56ab2f;
+            background: rgba(236, 72, 153, 0.15);
+            border-left: 4px solid #ec4899;
         }
         .stChatInput input {
-            border-radius: 2rem !important;
+            border-radius: 1.5rem !important;
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            padding: 1rem 1.5rem !important;
-            font-family: 'DM Serif Display', serif !important;
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            backdrop-filter: blur(25px);
+            padding: 1rem 1.25rem !important;
+            font-family: 'Manrope', sans-serif !important;
+            background: rgba(255, 255, 255, 0.05);
+            color: #e0e6ed;
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
         .stChatInput input:focus {
-            border-color: #a8e6cf !important;
-            box-shadow: 0 0 0 3px rgba(168, 230, 207, 0.3) !important;
-            background: rgba(255, 255, 255, 0.15);
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+            background: rgba(255, 255, 255, 0.1);
         }
         h1 {
             font-weight: 700;
             font-size: 3rem;
-            background: linear-gradient(135deg, #ffffff 0%, #ffd93d 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -184,48 +184,63 @@ st.markdown("""
         .stMarkdown {
             font-size: 1.1rem;
             line-height: 1.6;
-            color: #ffffff;
+            color: #e0e6ed;
         }
         .stSelectbox > div > div > div {
             border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
         }
         .stFileUploader > div > div > div {
             border-radius: 1rem;
-            border: 2px dashed rgba(168, 230, 207, 0.4);
-            background: rgba(168, 230, 207, 0.1);
-            backdrop-filter: blur(25px);
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            background: rgba(99, 102, 241, 0.05);
+            backdrop-filter: blur(10px);
         }
         .stTextInput > div > div > input {
             border-radius: 1rem;
             border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 1rem 1.25rem;
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            backdrop-filter: blur(25px);
+            background: rgba(255, 255, 255, 0.05);
+            color: #e0e6ed;
+            backdrop-filter: blur(10px);
+        }
+        .stTextInput > div > div > input:focus {
+            border-color: #ec4899;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
         }
         section[data-testid="stSidebar"] {
-            background: linear-gradient(180deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
-            backdrop-filter: blur(25px);
-            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            background: linear-gradient(180deg, rgba(15, 15, 35, 0.9) 0%, rgba(26, 26, 46, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
         .stSuccess > div {
-            background: rgba(86, 171, 47, 0.2);
-            border: 1px solid rgba(86, 171, 47, 0.5);
-            color: #ffffff;
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            color: #e0e6ed;
+            border-radius: 1rem;
+        }
+        .stWarning > div {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.5);
+            color: #e0e6ed;
             border-radius: 1rem;
         }
         .stTextArea > div > div > textarea {
             border-radius: 1rem;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            backdrop-filter: blur(25px);
+            background: rgba(255, 255, 255, 0.05);
+            color: #e0e6ed;
+            backdrop-filter: blur(10px);
+        }
+        .stSpinner > div {
+            color: #6366f1;
         }
     </style>
 """, unsafe_allow_html=True)
+
+
 
 # --- User Query Section ---
 if prompt:=st.chat_input("Ask Anything .."):
