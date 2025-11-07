@@ -15,4 +15,4 @@ python-pptx
 openpyxl
 requests
 python-multipart
-sentence-transformers`
+sentence-transformers
