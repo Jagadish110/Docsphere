@@ -3,13 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from bot import process_document, query_doc
-import tempfile
 
 app = FastAPI(title="RAG Chatbot Backend")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # set your frontend domain in prod
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -18,24 +17,26 @@ app.add_middleware(
 class QueryRequest(BaseModel):
     question: str
 
-# store full text temporarily
+# WARNING: global state resets on Render restarts (fine for portfolio)
 DOCUMENT_TEXT = ""
 
 @app.post("/upload")
 async def upload_file(
     file: Optional[UploadFile] = File(None),
-    url: Optional[str] = Form(None)
+    url: Optional[str] = Form(None),
 ):
     global DOCUMENT_TEXT
     try:
         if not file and not url:
             return {"error": "Either file or URL must be provided"}
 
-        # process the file and extract text inside bot.py
         response, full_text = process_document(file=file, url=url, return_text=True)
+        DOCUMENT_TEXT = full_text
 
-        DOCUMENT_TEXT = full_text  # cache for later viewing
-        return {"message": response, "preview": full_text[:] + "..."}  # send snippet to frontend
+        return {
+            "message": response,
+            "preview": full_text[:500] + "..."  # better preview limit
+        }
 
     except Exception as e:
         return {"error": str(e)}
@@ -54,7 +55,6 @@ async def ask_question(request: QueryRequest):
 
 @app.get("/document")
 async def view_document():
-    """Return the entire loaded document text"""
     global DOCUMENT_TEXT
     if not DOCUMENT_TEXT:
         return {"error": "No document loaded yet"}
@@ -62,4 +62,11 @@ async def view_document():
 
 @app.get("/")
 async def root():
-    return {"message": "RAG Chatbot API is running! Use /upload, /ask, and /document"}
+    return {
+        "message": "RAG Chatbot API is running",
+        "routes": ["/upload", "/ask", "/document"]
+    }
+
+@app.head("/")
+async def root_head():
+    return
